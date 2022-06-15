@@ -37,6 +37,16 @@
         }
         currentHook++;
       },
+      useMemo(callback, depArray) {
+        const hasNoDeps = !depArray
+        const { callback: memoisedCallback, depArray: memoisedDepArray } = hooks[currentHook] ?? {}
+        const hasChangedDeps = memoisedDepArray ? !depArray.every((el, i) => el === memoisedDepArray[i]) : true
+        if (hasNoDeps || hasChangedDeps) {
+          hooks[currentHook] = { callback: callback(), depArray }
+        }
+
+        return hooks[currentHook++]['callback'];
+      },
       render(component, node) {
         currentHook = 0;
         node.innerHTML = '';
@@ -137,12 +147,16 @@
   function Board() {
     const { squares, xIsNext, onClick, winner } = useTicTacToe();
 
-    let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = xIsNext !== null ? 'Next player: ' + (xIsNext ? 'X' : 'O') : '';
-    }
+    const status = React.useMemo(() => {
+      let status;
+      if (winner) {
+        status = 'Winner: ' + winner;
+      } else {
+        status = xIsNext !== null ? 'Next player: ' + (xIsNext ? 'X' : 'O') : '';
+      }
+      return status;
+
+    }, [winner, xIsNext]);
 
     React.useEffect(() => {
       console.log('updating window title')
