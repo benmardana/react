@@ -69,6 +69,46 @@
     )
   }
 
+  function useTicTacToe() {
+
+    const [squares, setSquares] = React.useState(null);
+    const [xIsNext, setXIsNext] = React.useState(null);
+
+    function onClick(index) {
+      if (calculateWinner(squares) || squares[index]) {
+        return;
+      }
+      const squaresCopy = squares.slice();
+      squaresCopy[index] = xIsNext ? 'X' : 'O';
+      setXIsNext(!xIsNext);
+      setSquares(squaresCopy);
+    }
+
+    const winner = calculateWinner(squares);
+
+    React.useEffect(() => {
+      async function loadSaveState() {
+        let state = {
+          squares: Array(9).fill(null),
+          xIsNext: true
+        };
+
+        try {
+          await new Promise(r => setTimeout(r, 2000));
+          state = await (await fetch('save-state.json')).json();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setSquares(state.squares);
+          setXIsNext(state.xIsNext);
+        }
+      }
+      loadSaveState();
+    }, []);
+
+    return { squares, xIsNext, onClick, winner };
+  }
+
   function calculateWinner(squares) {
     if (!squares) { return null }
     const lines = [
@@ -95,20 +135,8 @@
   }
 
   function Board() {
-    const [squares, setSquares] = React.useState(null);
-    const [xIsNext, setXIsNext] = React.useState(null);
+    const { squares, xIsNext, onClick, winner } = useTicTacToe();
 
-    function onClick(index) {
-      if (calculateWinner(squares) || squares[index]) {
-        return;
-      }
-      const squaresCopy = squares.slice();
-      squaresCopy[index] = xIsNext ? 'X' : 'O';
-      setXIsNext(!xIsNext); // causes a whole reload
-      setSquares(squaresCopy);
-    }
-
-    const winner = calculateWinner(squares);
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
@@ -121,25 +149,6 @@
       document.title = winner ? 'Game Over!' : 'Tic-Tac-Toe'
     }, [winner])
 
-    React.useEffect(() => {
-      async function loadSaveState() {
-        let state = {
-          squares: Array(9).fill(null),
-          xIsNext: true
-        };
-
-        try {
-          await new Promise(r => setTimeout(r, 2000));
-          state = await (await fetch('save-state.json')).json();
-        } catch (e) {
-          console.error(e);
-        } finally {
-          setSquares(state.squares);
-          setXIsNext(state.xIsNext);
-        }
-      }
-      loadSaveState();
-    }, [])
 
     return createElement('div', { className: "game" },
       squares ?
