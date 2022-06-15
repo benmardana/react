@@ -39,13 +39,35 @@
 
   function App() {
     return createElement('div', {},
-      Square()
+      Board()
     )
   }
 
-  function Square() {
+  function Board() {
+    return createElement('div', { className: "game" },
+      createElement('div', { className: "game-board" },
+        createElement('div', { className: "board-row" },
+          Square(0),
+          Square(1),
+          Square(2)
+        ),
+        createElement('div', { className: "board-row" },
+          Square(3),
+          Square(4),
+          Square(5)
+        ),
+        createElement('div', { className: "board-row" },
+          Square(6),
+          Square(7),
+          Square(8)
+        ),
+      )
+    )
+  }
+
+  function Square(index) {
     function onclick() {
-      console.log('clicked');
+      console.log(`clicked ${index}`);
     }
     return createElement('button', { onclick });
   }
