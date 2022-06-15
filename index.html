@@ -66,10 +66,14 @@
   }
 
   function Square(index) {
-    function onclick() {
+    let value = null;
+
+    function onClick() {
+      value = 'X';
       console.log(`clicked ${index}`);
     }
-    return createElement('button', { onclick });
+
+    return createElement('button', { onclick: onClick, innerText: value })
   }
 
   window.onload = function () {
