@@ -19,11 +19,15 @@
       render(component, node) {
         node.appendChild(component);
       },
-      createElement(tagName, props = {}) {
+      createElement(tagName, props = {}, ...children) {
         const newElement = document.createElement(tagName);
 
         for (propKey of Object.keys(props)) {
           newElement[propKey] = props[propKey];
+        }
+
+        for (child of children) {
+          newElement.appendChild(child);
         }
 
         return newElement;
@@ -32,7 +36,9 @@
   })();
 
   function App() {
-    return React.createElement('p', { innerText: 'Hello, World!' });
+    return React.createElement('div', {},
+      React.createElement('p', { innerText: 'Hello, World!' })
+    );
   }
 
   window.onload = function () {
