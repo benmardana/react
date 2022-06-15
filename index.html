@@ -18,12 +18,21 @@
     return {
       render(component, node) {
         node.appendChild(component);
+      },
+      createElement(tagName, props = {}) {
+        const newElement = document.createElement(tagName);
+
+        for (propKey of Object.keys(props)) {
+          newElement[propKey] = props[propKey];
+        }
+
+        return newElement;
       }
     }
   })();
 
   function App() {
-    return document.createElement('hr');
+    return React.createElement('p', { innerText: 'Hello, World!' });
   }
 
   window.onload = function () {
