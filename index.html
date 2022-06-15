@@ -15,7 +15,16 @@
 
 <script>
   const React = (function () {
+    let _val;
     return {
+      useState(initialValue) {
+        _val = _val || initialValue;
+        function setState(newVal) {
+          _val = newVal;
+          renderApp(); // let react manage rerenders - in reality react is more magic than this
+        }
+        return [_val, setState];
+      },
       render(component, node) {
         node.innerHTML = '';
         node.appendChild(component);
@@ -51,25 +60,12 @@
     return createElement('button', { innerText, onclick: () => onClick(index) })
   }
 
-  function useState(initialValue) {
-    var _val = initialValue
-    function state() {
-      return _val
-    }
-    function setState(newVal) {
-      _val = newVal
-    }
-    return [state, setState];
-  }
-
-  const [squares, setSquares] = useState(null);
-
   function Board() {
+    const [squares, setSquares] = React.useState(null);
 
     async function loadSaveState() {
       await new Promise(r => setTimeout(r, 2000));
       setSquares((await (await fetch('save-state.json')).json()).squares);
-      renderApp();
     }
 
     function onClick(index) {
@@ -79,7 +75,7 @@
       renderApp();
     }
 
-    if (!squares()) {
+    if (!squares) {
       loadSaveState();
       return createElement('div', { className: "game", innerText: "loading..." });
     }
@@ -87,19 +83,19 @@
     return createElement('div', { className: "game" },
       createElement('div', { className: "game-board" },
         createElement('div', { className: "board-row" },
-          Square(0, squares()[0], onClick),
-          Square(1, squares()[1], onClick),
-          Square(2, squares()[2], onClick)
+          Square(0, squares[0], onClick),
+          Square(1, squares[1], onClick),
+          Square(2, squares[2], onClick)
         ),
         createElement('div', { className: "board-row" },
-          Square(3, squares()[3], onClick),
-          Square(4, squares()[4], onClick),
-          Square(5, squares()[5], onClick)
+          Square(3, squares[3], onClick),
+          Square(4, squares[4], onClick),
+          Square(5, squares[5], onClick)
         ),
         createElement('div', { className: "board-row" },
-          Square(6, squares()[6], onClick),
-          Square(7, squares()[7], onClick),
-          Square(8, squares()[8], onClick)
+          Square(6, squares[6], onClick),
+          Square(7, squares[7], onClick),
+          Square(8, squares[8], onClick)
         ),
       )
     )
