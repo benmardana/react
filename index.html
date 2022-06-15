@@ -67,13 +67,14 @@
 
   function Square(index) {
     let value = null;
+    const squareElement = createElement('button', { onclick: onClick });
 
     function onClick() {
-      value = 'X';
+      squareElement.innerText = 'X';
       console.log(`clicked ${index}`);
     }
 
-    return createElement('button', { onclick: onClick, innerText: value })
+    return squareElement
   }
 
   window.onload = function () {
