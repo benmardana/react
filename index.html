@@ -14,10 +14,21 @@
 </body>
 
 <script>
-  window.onload = function () {
-    const root = document.getElementById('root');
-    root.appendChild(document.createElement('hr'))
+  const React = (function () {
+    return {
+      render(component, node) {
+        node.appendChild(component);
+      }
+    }
+  })();
+
+  function App() {
+    return document.createElement('hr');
   }
+
+  window.onload = function () {
+    React.render(App(), document.getElementById('root'));
+  };
 </script>
 
 </html>
