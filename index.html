@@ -17,6 +17,7 @@
   const React = (function () {
     return {
       render(component, node) {
+        node.innerHTML = '';
         node.appendChild(component);
       },
       createElement(tagName, props = {}, ...children) {
@@ -36,6 +37,9 @@
   })();
 
   const createElement = React.createElement;
+  function renderApp() {
+    React.render(App(), document.getElementById('root'));
+  }
 
   function App() {
     return createElement('div', {},
@@ -43,43 +47,51 @@
     )
   }
 
+  function Square(index, innerText, onClick) {
+    return createElement('button', { innerText, onclick: () => onClick(event, index) })
+  }
+
   function Board() {
+    let squares = Array(9).fill(null);
+
+    async function loadSaveState() {
+      await new Promise(r => setTimeout(r, 2000));
+      squares = (await (await fetch('save-state.json')).json()).squares;
+      // now what?
+      // renderApp(); // ?
+    }
+
+    loadSaveState();
+
+    function onClick(event, index) {
+      const squaresCopy = squares.slice();
+      squaresCopy[index] = 'X';
+      squares = squaresCopy;
+      event.target.innerText = squares[index];
+    }
+
     return createElement('div', { className: "game" },
       createElement('div', { className: "game-board" },
         createElement('div', { className: "board-row" },
-          Square(0),
-          Square(1),
-          Square(2)
+          Square(0, squares[0], onClick),
+          Square(1, squares[1], onClick),
+          Square(2, squares[2], onClick)
         ),
         createElement('div', { className: "board-row" },
-          Square(3),
-          Square(4),
-          Square(5)
+          Square(3, squares[3], onClick),
+          Square(4, squares[4], onClick),
+          Square(5, squares[5], onClick)
         ),
         createElement('div', { className: "board-row" },
-          Square(6),
-          Square(7),
-          Square(8)
+          Square(6, squares[6], onClick),
+          Square(7, squares[7], onClick),
+          Square(8, squares[8], onClick)
         ),
       )
     )
   }
 
-  function Square(index) {
-    let value = null;
-    const squareElement = createElement('button', { onclick: onClick });
-
-    function onClick() {
-      squareElement.innerText = 'X';
-      console.log(`clicked ${index}`);
-    }
-
-    return squareElement
-  }
-
-  window.onload = function () {
-    React.render(App(), document.getElementById('root'));
-  };
+  window.onload = renderApp();
 </script>
 
 </html>
