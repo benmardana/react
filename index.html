@@ -96,12 +96,7 @@
 
   function Board() {
     const [squares, setSquares] = React.useState(null);
-    const [xIsNext, setXIsNext] = React.useState(true);
-
-    async function loadSaveState() {
-      await new Promise(r => setTimeout(r, 2000));
-      setSquares((await (await fetch('save-state.json')).json()).squares);
-    }
+    const [xIsNext, setXIsNext] = React.useState(null);
 
     function onClick(index) {
       if (calculateWinner(squares) || squares[index]) {
@@ -118,7 +113,7 @@
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+      status = xIsNext !== null ? 'Next player: ' + (xIsNext ? 'X' : 'O') : '';
     }
 
     React.useEffect(() => {
@@ -126,29 +121,45 @@
       document.title = winner ? 'Game Over!' : 'Tic-Tac-Toe'
     }, [winner])
 
-    if (!squares) {
+    React.useEffect(() => {
+      async function loadSaveState() {
+        let state = {
+          squares: Array(9).fill(null),
+          xIsNext: true
+        };
+
+        try {
+          await new Promise(r => setTimeout(r, 2000));
+          state = await (await fetch('save-state.json')).json();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setSquares(state.squares);
+          setXIsNext(state.xIsNext);
+        }
+      }
       loadSaveState();
-      return createElement('div', { className: "game", innerText: "loading..." });
-    }
+    }, [])
 
     return createElement('div', { className: "game" },
-      createElement('div', { className: "game-board" },
-        createElement('div', { className: "board-row" },
-          Square(0, squares[0], onClick),
-          Square(1, squares[1], onClick),
-          Square(2, squares[2], onClick)
-        ),
-        createElement('div', { className: "board-row" },
-          Square(3, squares[3], onClick),
-          Square(4, squares[4], onClick),
-          Square(5, squares[5], onClick)
-        ),
-        createElement('div', { className: "board-row" },
-          Square(6, squares[6], onClick),
-          Square(7, squares[7], onClick),
-          Square(8, squares[8], onClick)
-        ),
-      ),
+      squares ?
+        createElement('div', { className: "game-board" },
+          createElement('div', { className: "board-row" },
+            Square(0, squares[0], onClick),
+            Square(1, squares[1], onClick),
+            Square(2, squares[2], onClick)
+          ),
+          createElement('div', { className: "board-row" },
+            Square(3, squares[3], onClick),
+            Square(4, squares[4], onClick),
+            Square(5, squares[5], onClick)
+          ),
+          createElement('div', { className: "board-row" },
+            Square(6, squares[6], onClick),
+            Square(7, squares[7], onClick),
+            Square(8, squares[8], onClick)
+          )
+        ) : createElement('div', { innerText: "loading..." }),
       createElement('div', { className: "game-info" },
         createElement('div', { innerText: status })
       )
