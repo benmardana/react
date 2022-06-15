@@ -27,6 +27,16 @@
         }
         return [hooks[currentHook++], setState];
       },
+      useEffect(callback, depArray) {
+        const hasNoDeps = !depArray;
+        const dependencies = hooks[currentHook];
+        const hasChangedDeps = dependencies ? !depArray.every((el, i) => el === dependencies[i]) : true;
+        if (hasNoDeps || hasChangedDeps) {
+          callback();
+          hooks[currentHook] = depArray;
+        }
+        currentHook++;
+      },
       render(component, node) {
         currentHook = 0;
         node.innerHTML = '';
@@ -111,7 +121,10 @@
       status = 'Next player: ' + (xIsNext ? 'X' : 'O');
     }
 
-    document.title = winner ? 'Game Over!' : 'Tic-Tac-Toe'
+    React.useEffect(() => {
+      console.log('updating window title')
+      document.title = winner ? 'Game Over!' : 'Tic-Tac-Toe'
+    }, [winner])
 
     if (!squares) {
       loadSaveState();
