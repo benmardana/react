@@ -15,17 +15,20 @@
 
 <script>
   const React = (function () {
-    let _val;
+    let hooks = [];
+    let currentHook = 0;
     return {
       useState(initialValue) {
-        _val = _val || initialValue;
-        function setState(newVal) {
-          _val = newVal;
+        hooks[currentHook] = hooks[currentHook] === undefined ? initialValue : hooks[currentHook];
+        const setStateHookIndex = currentHook;
+        function setState(newState) {
+          hooks[setStateHookIndex] = newState;
           renderApp(); // let react manage rerenders - in reality react is more magic than this
         }
-        return [_val, setState];
+        return [hooks[currentHook++], setState];
       },
       render(component, node) {
+        currentHook = 0;
         node.innerHTML = '';
         node.appendChild(component);
       },
