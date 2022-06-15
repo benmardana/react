@@ -62,6 +62,7 @@
 
   function Board() {
     const [squares, setSquares] = React.useState(null);
+    const [xIsNext, setXIsNext] = React.useState(true);
 
     async function loadSaveState() {
       await new Promise(r => setTimeout(r, 2000));
@@ -69,10 +70,10 @@
     }
 
     function onClick(index) {
-      const squaresCopy = squares().slice();
-      squaresCopy[index] = 'X';
+      const squaresCopy = squares.slice();
+      squaresCopy[index] = xIsNext ? 'X' : 'O';
+      setXIsNext(!xIsNext); // causes a whole reload
       setSquares(squaresCopy);
-      renderApp();
     }
 
     if (!squares) {
