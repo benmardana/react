@@ -111,6 +111,8 @@
       status = 'Next player: ' + (xIsNext ? 'X' : 'O');
     }
 
+    document.title = winner ? 'Game Over!' : 'Tic-Tac-Toe'
+
     if (!squares) {
       loadSaveState();
       return createElement('div', { className: "game", innerText: "loading..." });
