@@ -35,10 +35,19 @@
     }
   })();
 
+  const createElement = React.createElement;
+
   function App() {
-    return React.createElement('div', {},
-      React.createElement('p', { innerText: 'Hello, World!' })
-    );
+    return createElement('div', {},
+      Square()
+    )
+  }
+
+  function Square() {
+    function onclick() {
+      console.log('clicked');
+    }
+    return createElement('button', { onclick });
   }
 
   window.onload = function () {
