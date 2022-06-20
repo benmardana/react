@@ -1,6 +1,6 @@
 # Make yourself a React
 
-Build react from scratch and see [why it is the way that it is](https://www.youtube.com/watch?v=QXe1PkslirY)
+Build react from scratch and see [why it is the way that it is](https://www.youtube.com/watch?v=QXe1PkslirY).
 
 This repo walks through the introductory React project, [Tic Tac Toe](https://reactjs.org/tutorial/tutorial.html), but instead of using react.js, it sets up it's own rendering library along the way - illustrating the problems React solves for and hopefully why it behaves as it does.
 
