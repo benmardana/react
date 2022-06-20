@@ -4,9 +4,9 @@ Build react from scratch and see [why it is the way that it is](https://www.yout
 
 ## Getting Started
 
-- Serve this directory using your preferred server (some examples below)
+- Serve this directory using your preferred method (some examples below)
 - The `react` branch contains the final result
-- Checkout the first commit on that branch, then step through each commit one by one to see React gets made!
+- Checkout the first commit on that branch, then step through each commit one by one to see how React gets made!
 
 ### Python 3.x
 
