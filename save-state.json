@@ -1,0 +1,4 @@
+{
+    "squares": ["X", "O", null, "X", null, null, "O", null, "X"],
+    "xIsNext": false
+  }

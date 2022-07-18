@@ -13,4 +13,102 @@
   <div id="root"></div>
 </body>
 
+<script>
+  const React = function () {
+    let hooks = [];
+    let currentHook = 0;
+    return {
+      render(component, node) {
+        currentHook = 0;
+        node.innerHTML = '';
+        node.appendChild(component);
+      },
+      createElement(tagName, props = {}, ...children) {
+        const newElement = document.createElement(tagName);
+
+        for (propKey of Object.keys(props)) {
+          newElement[propKey] = props[propKey];
+        }
+
+        for (child of children) {
+          newElement.appendChild(child);
+        }
+
+        return newElement;
+      },
+      useState(initialState) {
+        hooks[currentHook] = hooks[currentHook] === undefined ? initialState : hooks[currentHook];
+        const setStateHookIndex = currentHook;
+        function setState(newState) {
+          hooks[setStateHookIndex] = newState;
+          renderApp();
+        }
+        return [hooks[currentHook++], setState];
+      }
+    }
+  }();
+
+  function renderApp() {
+    React.render(App(), document.getElementById('root'));
+  }
+
+  const createElement = React.createElement;
+
+  function App() {
+    return createElement('div', {},
+      Board()
+    );
+  }
+
+  
+  function Board() {
+    const [squares, setSquares] = React.useState(null);
+    const [xIsNext, setXIsNext] = React.useState(true);
+    
+    async function loadSaveState() {
+      await new Promise(r => setTimeout(r, 2000));
+      setSquares((await (await fetch('save-state.json')).json()).squares);
+      
+    }
+
+    if (!squares) {
+      loadSaveState();
+      return createElement('div', { className: "game", innerText: "loading..." });
+    }
+
+    function onclick(index) {
+      const squaresCopy = squares.slice();
+      squaresCopy[index] = xIsNext ? 'X' : 'O';
+      setXIsNext(!xIsNext); // causes a whole reload
+      setSquares(squaresCopy);
+    }
+
+    return createElement('div', { className: 'game', },
+      createElement('div', { className: 'game-board', },
+        createElement('div', { className: 'board-row', },
+          Square(0, squares[0], onclick),
+          Square(1, squares[1], onclick),
+          Square(2, squares[2], onclick),
+        ),
+        createElement('div', {className: 'board-row', },
+          Square(3, squares[3], onclick),
+          Square(4, squares[4], onclick),
+          Square(5, squares[5], onclick),
+        ),
+        createElement('div', {className: 'board-row', },
+          Square(6, squares[6], onclick),
+          Square(7, squares[7], onclick),
+          Square(8, squares[8], onclick),
+        )
+      )
+    )
+  }
+
+  function Square(index, innerText, onclick) {
+    return createElement('button', { onclick: () => onclick(index), innerText })
+  }
+
+  window.onload = renderApp();
+</script>
+
 </html>
