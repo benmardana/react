@@ -18,24 +18,44 @@
     let hooks = [];
     let currentHook = 0;
     return {
-      render(component, node) {
+      render(element, container) {
         currentHook = 0;
-        node.innerHTML = '';
-        node.appendChild(component);
+        const component =
+          element.type == "TEXT_ELEMENT"
+            ? document.createTextNode("")
+            : document.createElement(element.type)
+
+        Object.keys(element.props)
+          .filter(key => key !== "children")
+          .forEach(name => {
+            component[name] = element.props[name]
+          })
+        element.props.children.forEach(child =>
+          React.render(child, component)
+        )
+
+        container.appendChild(component)
       },
-      createElement(tagName, props = {}, ...children) {
-        const newElement = document.createElement(tagName);
-
-        for (propKey of Object.keys(props)) {
-          newElement[propKey] = props[propKey];
+      createElement(type, props = {}, ...children) {
+        return {
+          type,
+          props: {
+            ...props,
+            children: children.map(child =>
+              typeof child === "object"
+                ? child
+                : ({
+                  type: "TEXT_ELEMENT",
+                  props: {
+                    nodeValue: child,
+                    children: [],
+                  },
+                })
+            )
+          }
         }
-
-        for (child of children) {
-          newElement.appendChild(child);
-        }
-
-        return newElement;
       },
+
       useState(initialState) {
         hooks[currentHook] = hooks[currentHook] === undefined ? initialState : hooks[currentHook];
         const setStateHookIndex = currentHook;
@@ -49,7 +69,10 @@
   }();
 
   function renderApp() {
+    document.getElementById('root').innerHTML = '';
+
     React.render(App(), document.getElementById('root'));
+    console.log({App: App()})
   }
 
   const createElement = React.createElement;
@@ -60,21 +83,10 @@
     );
   }
 
-  
-  function Board() {
-    const [squares, setSquares] = React.useState(null);
-    const [xIsNext, setXIsNext] = React.useState(true);
-    
-    async function loadSaveState() {
-      await new Promise(r => setTimeout(r, 2000));
-      setSquares((await (await fetch('save-state.json')).json()).squares);
-      
-    }
 
-    if (!squares) {
-      loadSaveState();
-      return createElement('div', { className: "game", innerText: "loading..." });
-    }
+  function Board() {
+    const [squares, setSquares] = React.useState([null, null, null, null, null, null, null, null, null]);
+    const [xIsNext, setXIsNext] = React.useState(true);
 
     function onclick(index) {
       const squaresCopy = squares.slice();
@@ -90,12 +102,12 @@
           Square(1, squares[1], onclick),
           Square(2, squares[2], onclick),
         ),
-        createElement('div', {className: 'board-row', },
+        createElement('div', { className: 'board-row', },
           Square(3, squares[3], onclick),
           Square(4, squares[4], onclick),
           Square(5, squares[5], onclick),
         ),
-        createElement('div', {className: 'board-row', },
+        createElement('div', { className: 'board-row', },
           Square(6, squares[6], onclick),
           Square(7, squares[7], onclick),
           Square(8, squares[8], onclick),
