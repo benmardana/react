@@ -1,16 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <link rel="stylesheet" href="styles.css">
-  <title>React</title>
+  <title>demystifying react</title>
 </head>
 
 <body>
-  <div id="root"></div>
 </body>
+
+<script>
+  const createElement = (type, attributes, ...children) => {
+    const element = document.createElement(type);
+
+    for (const key in attributes) {
+      element[key] = attributes[key];
+    }
+
+    for (const child of children) {
+      element.append(child);
+    }
+
+    return element; // done!
+  }
+
+  const app = createElement('div', {},
+    createElement('header', {},
+      createElement('nav', {},
+        createElement('a', { id: 'home', href: "/" }, 'Home'),
+        createElement('a', { id: 'blog', href: "/blog", style: "margin-left: 8px" }, 'Blog'),
+      )
+    ),
+    createElement('main', {},
+      createElement('h1', {}, 'My Website'),
+      createElement('p', {}, 'Welcome to my website'),
+    ),
+    createElement('footer', {},
+      createElement('a', { id: 'about', href: "/about" }, 'About'),
+      createElement('a', { id: 'contact', href: "/contact", style: "margin-left: 8px" }, 'Contact'),
+    )
+  );
+
+  const renderRoot = (rootNode, element) => {
+    rootNode.append(element);
+  }
+
+  renderRoot(document.body, app);
+</script>
 
 </html>
